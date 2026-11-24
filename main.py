@@ -39,6 +39,8 @@ FINAL = (
 )
 
 MAX_CHARS = 320
+ENTRY_FILENAME = "entry.txt"
+ENTRY_MODE = "w"  # plain write, no newline translation, no trailing newline
 
 
 def main() -> int:
@@ -52,10 +54,16 @@ def main() -> int:
     if not text.strip():
         print("entry must not be only whitespace", file=sys.stderr)
         return 1
+    if "  " in text:
+        print("entry must not contain a double space", file=sys.stderr)
+        return 1
+    if not text.isascii():
+        print("entry must be plain ASCII", file=sys.stderr)
+        return 1
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
-    path = os.path.join(out_dir, "entry.txt")
-    with open(path, "w", encoding="utf-8", newline="") as f:
+    path = os.path.join(out_dir, ENTRY_FILENAME)
+    with open(path, ENTRY_MODE, encoding="utf-8", newline="") as f:
         f.write(text)  # no trailing newline
     print("wrote %s (%d characters)" % (path, len(text)))
     return 0
